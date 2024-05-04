@@ -23,8 +23,5 @@ with open('inditextech_hackupc_challenge_images.csv') as file:
                     if image.status_code == 200:
                         with open(f'.{os.sep}{directory}{os.sep}image{i}.jpg', 'wb') as f:
                             f.write(image.content)
-                    else:
-                        shutil.rmtree(directory)
-                        break
         if idx % 10 == 0:
             print(f'Iteration:{idx}')
