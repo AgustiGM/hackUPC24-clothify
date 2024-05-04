@@ -1,6 +1,6 @@
 import cv2
 import os
-import shutil
+import re
 
 winSize = (64, 64)
 blockSize = (16, 16)
@@ -31,6 +31,16 @@ def get_hog_feature_vector(image):
 
 
 def create_directory(path):
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.makedirs(path)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def get_attributes_from_url(url):
+    pattern = r'[0-9]{4}\/[A-Z]\/[0-9]\/[0-9]\/'
+    res = re.findall(pattern, url)
+    if len(res) == 1:
+        n = res[0][5:-1].split('/')
+        ssn = 'S'
+        if n[0] in ['W', 'I']:
+            ssn = 'W'
+        return [ssn, n[1], n[2]]

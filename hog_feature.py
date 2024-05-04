@@ -35,17 +35,17 @@ def get_hog_feature_vector(image):
     return hist
 
 
-def transform_images_to_hog_from_root_directory(directory):
+def transform_images_to_hog_from_root_directory(directory, transform_function=get_hog_feature_vector):
     _labels = []
     _data = []
     _image_route = []
-    for index, imdir in enumerate(os.listdir(directory if directory.endswith(os.sep) else directory+os.sep)):
+    for index, imdir in enumerate(os.listdir(directory if directory.endswith(os.sep) else directory + os.sep)):
         images = []
         for image in os.listdir(f'{directory}{imdir}'):
             im = cv2.imread(f'{directory}{imdir}{os.sep}{image}')
-            images.append(np.array(get_hog_feature_vector(im)))
+            images.append(np.array(transform_function(im)))
             _labels.append(imdir)
-            _data.append(np.array(get_hog_feature_vector(im)))
+            _data.append(np.array(transform_function(im)))
             _image_route.append([imdir, image])
         if index % 10 == 0:
             print(f'Iteration:{index}')
@@ -53,12 +53,16 @@ def transform_images_to_hog_from_root_directory(directory):
     return _data, _labels, _image_route
 
 
-data, labels, image_route = transform_images_to_hog_from_root_directory(image_directory)
+def aux_func(image):
+    return cv2.resize(image, (32, 32)).flatten()
+
+
+data, labels, image_route = transform_images_to_hog_from_root_directory(image_directory, transform_function=aux_func)
 
 arr = np.array(data)
 list_of_tuples = list(zip(data, labels, image_route))
 pd = pandas.DataFrame(list_of_tuples, columns=['features', 'labels', 'routes'])
-pd.to_pickle('dataframe.csv')
+pd.to_pickle('dataframe_images.csv')
 
 # arr = np.array(data)
 #
