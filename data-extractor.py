@@ -3,17 +3,26 @@ import os
 import shutil
 import csv
 
+
+def create_directory(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+
+
+root_directory = 'images'
 with open('inditextech_hackupc_challenge_images.csv') as file:
     data = csv.reader(file)
     for idx, element in enumerate(data):
-        if 0 < idx < 2:
-            directory = f'{str(idx)}'
-            if os.path.exists(directory):
-                shutil.rmtree(directory)
-            os.makedirs(directory)
+        if 0 < idx < 200:
+            directory = f'{root_directory}{os.sep}{str(idx)}'
+            create_directory(directory)
             for i, url in enumerate(element):
-                image = requests.get(url)
-                with open(f'.{os.sep}{directory}{os.sep}image{i}.jpg', 'wb') as f:
-                    f.write(image.content)
-
-
+                if len(url) > 0:
+                    image = requests.get(url)
+                if image.status_code == 200:
+                    with open(f'.{os.sep}{directory}{os.sep}image{i}.jpg', 'wb') as f:
+                        f.write(image.content)
+                else:
+                    shutil.rmtree(directory)
+                    break
