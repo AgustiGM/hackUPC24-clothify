@@ -1,50 +1,45 @@
 import annoy as an
 from joblib.numpy_pickle_utils import xrange
 import cv2
-import os
-import glob
 
-data = []
-values = []
-labels = []
-def capture_images():
-    folder_path = 'res/images'
-    folders = [f for f in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, f))]
+def prepare_flattened_image(image_path):
+    image = cv2.imread(image_path)
+    image = cv2.resize(image, (32,32))
+    return image.flatten()
+def load_images_from_csv(file_path='res/images.csv'):
+    data, labels, index = [], [], []
+    with open(file_path, 'r') as file:
+        for line in file:
+            parts = line.split(';')
+            index.append(parts[0])
+            data.append([int(x) for x in parts[1].split(',')])
+            labels.append(parts[2])
+    return data, labels, index
 
-    for folder in folders:
-        folder_name = folder
-        images = glob.glob(os.path.join(folder_path, folder, '*.jpg'))[:3]  # Adjust extension as per your requirement
-
-        # print("Folder:", folder_name)
-        for image_path in images:
-            values.append(folder_name+"/"+os.path.basename(image_path))
-            image = cv2.imread(image_path)
-            image = cv2.resize(image, (32,32))
-            labels.append(folder_name)
-            data.append(image.flatten())
+(data, labels, values) = load_images_from_csv()
 
 
-capture_images()
+size_of_item = len(data[0])
+number_of_items = len(data)
+number_of_sets = len(set(labels))
 
+index_tree = an.AnnoyIndex(size_of_item, 'angular')
+for i in range(number_of_items):
+    index_tree.add_item(i, data[i])
 
-f = 3072    #len(data)
-t = an.AnnoyIndex(f)
-for i in xrange(len(data)):
-    t.add_item(i, data[i])
-
-t.build(len(set(labels))) # 50 trees
-t.save('test.tree')
+index_tree.build(number_of_sets) # 50 trees
+index_tree.save('test.tree')
 
 # …
 
-u = an.AnnoyIndex(f)
+u = an.AnnoyIndex(size_of_item, 'angular')
 u.load('test.tree') # super fast, will just mmap the file
-# print (u.get_nns_by_item(0, 3)) # will find the 1000 nearest neighbors
+
 queryImagePath = 'res/images/11/image0.jpg'
 
-image = cv2.imread(queryImagePath)
-image = cv2.resize(image, (32,32)).flatten()
-result = u.get_nns_by_vector(image, 5);
+image = prepare_flattened_image(queryImagePath)
+result = u.get_nns_by_vector(image, 10);
+
 print(result)
 for(i, r) in enumerate(result):
     print(values[r])
