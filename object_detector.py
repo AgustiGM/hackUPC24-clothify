@@ -15,12 +15,11 @@ def get_sobel_edges(image, ddepth=cv2.CV_16S):
     return grad
 
 
-def extract_important_object(image, kernel=(25, 25), initial_resize=(500, 500), show_images=False):
+def extract_important_object(image, kernel=(25, 25), initial_resize=(500, 750), show_images=False):
     res_image = cv2.resize(image, initial_resize)
     gray_image = cv2.cvtColor(res_image, cv2.COLOR_BGR2GRAY)
     blurred_image = cv2.GaussianBlur(gray_image, kernel, 0)
     grad = get_sobel_edges(blurred_image)
-    cv2.imshow('sobel', grad)
     diff_th, otsu_image = cv2.threshold(grad, np.amin(blurred_image), np.amax(blurred_image),
                                         cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     closing = cv2.morphologyEx(otsu_image, cv2.MORPH_CLOSE, kernel)
@@ -33,6 +32,7 @@ def extract_important_object(image, kernel=(25, 25), initial_resize=(500, 500), 
             largest = contour
     x, y, w, h = cv2.boundingRect(largest)
     if show_images:
+        cv2.imshow('sobel', grad)
         cv2.drawContours(res_image, contours, -1, (0, 0, 255), 3)
         cv2.rectangle(res_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cv2.imshow('contour', res_image)
@@ -40,16 +40,16 @@ def extract_important_object(image, kernel=(25, 25), initial_resize=(500, 500), 
         return res_image
     return res_image[y:y+h, x:x+w]
 
-#
-# path = f'images{os.sep}4{os.sep}image0.jpg'
+
+# path = f'images{os.sep}89{os.sep}image1.jpg'
 #
 # image = cv2.imread(path)
-#
-# cropped = extract_important_object(image)
+# #
+# cropped = extract_important_object(image, show_images=True)
 #
 # cv2.imshow('cropped', cropped)
 # cv2.imshow('original', cv2.resize(image, (500, 500)))
 #
 # cv2.waitKey(0)
-
+#
 # cv2.destroyAllWindows()

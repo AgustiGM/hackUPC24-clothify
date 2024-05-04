@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import pandas
 
-image_directory = f'images{os.sep}'
+image_directory = f'processed_images{os.sep}'
 
 resized_directory = f'resizedImages{os.sep}'
 
