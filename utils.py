@@ -1,4 +1,6 @@
 import cv2
+import os
+import shutil
 
 winSize = (64, 64)
 blockSize = (16, 16)
@@ -26,3 +28,9 @@ def get_hog_feature_vector(image):
     resized = cv2.resize(image, down_points)
     hist = hog.compute(resized, winStride, padding, locations)
     return hist
+
+
+def create_directory(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)

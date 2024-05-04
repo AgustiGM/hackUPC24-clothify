@@ -44,4 +44,4 @@ def extract_important_object(image, kernel=(25, 25), initial_resize=(500, 500)):
 #
 # cv2.waitKey(0)
 
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()

@@ -1,14 +1,8 @@
 import requests
 import os
-import shutil
+
 import csv
-
-
-def create_directory(path):
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.makedirs(path)
-
+from utils import create_directory
 
 root_directory = 'images'
 with open('inditextech_hackupc_challenge_images.csv') as file:

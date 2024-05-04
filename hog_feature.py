@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import pandas
 
-directory = f'images{os.sep}'
+image_directory = f'images{os.sep}'
 
 resized_directory = f'resizedImages{os.sep}'
 
@@ -35,34 +35,25 @@ def get_hog_feature_vector(image):
     return hist
 
 
-mat = []
-shape = (199, 3, 1764)
-arr = np.empty(shape)
-featureList = []
+def transform_images_to_hog_from_root_directory(directory):
+    _labels = []
+    _data = []
+    _image_route = []
+    for index, imdir in enumerate(os.listdir(directory if directory.endswith(os.sep) else directory+os.sep)):
+        images = []
+        for image in os.listdir(f'{directory}{imdir}'):
+            im = cv2.imread(f'{directory}{imdir}{os.sep}{image}')
+            images.append(np.array(get_hog_feature_vector(im)))
+            _labels.append(imdir)
+            _data.append(np.array(get_hog_feature_vector(im)))
+            _image_route.append([imdir, image])
+        if index % 10 == 0:
+            print(f'Iteration:{index}')
 
-labels = []
-data = []
-image_route = []
-for index, imdir in enumerate(os.listdir(directory)):
-    images = []
-    for image in os.listdir(f'{directory}{imdir}'):
-        im = cv2.imread(f'{directory}{imdir}{os.sep}{image}')
-        images.append(np.array(get_hog_feature_vector(im)))
-        labels.append(imdir)
-        data.append(np.array(get_hog_feature_vector(im)))
-        image_route.append([imdir, image])
-    featureList.append(images)
-    if index % 10 == 0:
-        print(f'Iteration:{index}')
+    return _data, _labels, _image_route
 
-# labels = []
-# data = []
-# image_route = []
-# for i, image_set in enumerate(featureList):
-#     for j, concrete_image in enumerate(image_set):
-#         labels.append(i)
-#         image_route.append([i, f'image{j}'])
-#         data.append(concrete_image)
+
+data, labels, image_route = transform_images_to_hog_from_root_directory(image_directory)
 
 arr = np.array(data)
 list_of_tuples = list(zip(data, labels, image_route))
