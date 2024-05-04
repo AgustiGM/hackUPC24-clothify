@@ -1,9 +1,10 @@
 import cv2
 import os
 import glob
+from object_detector import extract_important_object
 
 
-def format_images(folder_path='res/images'):
+def format_images(folder_path='res/images', size = (32,32)):
     data, labels, index = [], [], []
 
     folders = [f for f in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, f))]
@@ -15,7 +16,8 @@ def format_images(folder_path='res/images'):
         for image_path in images:
             index.append(folder_name + "/" + os.path.basename(image_path))
             image = cv2.imread(image_path)
-            image = cv2.resize(image, (32, 32))
+            image = extract_important_object(image)
+            image = cv2.resize(image, size)
             labels.append(folder_name)
             data.append(image.flatten())
 

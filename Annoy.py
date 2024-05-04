@@ -1,44 +1,65 @@
 import annoy as an
 from joblib.numpy_pickle_utils import xrange
 import cv2
-from data_formatter import load_images_from_csv
+from data_formatter import *
+from object_detector import extract_important_object
 
-def prepare_flattened_image(image_path):
-    image = cv2.imread(image_path)
+
+def prepare_flattened_image(image):
+    image = extract_important_object(image)
     image = cv2.resize(image, (32,32))
     return image.flatten()
 
-(data, labels, values) = load_images_from_csv()
+
+def get_images(csvdata, image, n_neighbours = 5):
+    if(not os.path.exists(csvdata)):
+        (data, labels, values) = format_images_and_save(folder_path='res/images', save_path='res/images.csv')
+    else:
+        (data, labels, values) = load_images_from_csv(csvdata)
+
+    size_of_item = len(data[0])
+    number_of_items = len(data)
+    number_of_sets = 50
+
+    index_tree = an.AnnoyIndex(size_of_item, 'angular')
+    for i in range(number_of_items):
+        index_tree.add_item(i, data[i])
+
+    index_tree.build(number_of_sets)
+    index_tree.save('test.tree')
 
 
-size_of_item = len(data[0])
-number_of_items = len(data)
-number_of_sets = len(set(labels))
+    u = an.AnnoyIndex(size_of_item, 'angular')
+    u.load('test.tree')
 
-index_tree = an.AnnoyIndex(size_of_item, 'angular')
-for i in range(number_of_items):
-    index_tree.add_item(i, data[i])
 
-index_tree.build(number_of_sets)
-index_tree.save('test.tree')
+    image = prepare_flattened_image(image)
+    (result, distances) = u.get_nns_by_vector(image, n_neighbours, search_k=5, include_distances=True)
 
-u = an.AnnoyIndex(size_of_item, 'angular')
-u.load('test.tree')
 
-queryImagePath = 'res/images/23/image0.jpg'
+    return result, distances, values
 
-image = prepare_flattened_image(queryImagePath)
-(result, distances) = u.get_nns_by_vector(image, 5, include_distances=True);
 
-print(result)
-print(distances)
-for(i, r) in enumerate(result):
-    print(values[r])
+def get_index(index_values):
+    index = an.AnnoyIndex(3000, 'angular')
+    index.load('index-'+index_values.index(0)+'-'+index_values.index(1)+'-'+index_values.index(2)+'.tree')
+    return index
 
-cv2.imshow('Query Image', cv2.resize(cv2.imread(queryImagePath), (500,500) ))
 
-for(i, r) in enumerate(result):
-    cv2.imshow('Result Image '+str(i), cv2.resize(cv2.imread(f'res/images/{values[result[i]]}'), (500,500)))
+def get_values(index_values):
+    with open('index-'+index_values.index(0)+'-'+index_values.index(1)+'-'+index_values.index(2)+'.csv', 'r') as file:
+        values = []
+        for line in file:
+            values.append(line)
+    return values
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+
+def get_images_by_index(image, index_values = (0,0,0), n_neighbours = 5):
+    index_tree = get_index(index_values)
+    values = get_values(index_values)
+
+    image = prepare_flattened_image(image)
+    (result, distances) = index_tree.get_nns_by_vector(image, n_neighbours, search_k=5, include_distances=True)
+
+    return result, distances, values
+
