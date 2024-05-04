@@ -1,6 +1,9 @@
 import csv
+import os
+
 import pandas as pd
 import re
+from utils import create_directory
 
 
 def find_attributes(url):
@@ -14,9 +17,7 @@ def find_attributes(url):
 route = 'inditextech_hackupc_challenge_images.csv'
 
 data = {}
-seasons = set()
-product_type = set()
-section = set()
+
 
 with open(route, 'r') as file:
     reader = csv.reader(file)
@@ -28,9 +29,6 @@ with open(route, 'r') as file:
             ssn = 'S'
             if n[0] in ['W', 'I']:
                 ssn = 'W'
-            seasons.add(ssn)
-            product_type.add(n[1])
-            section.add(n[2])
             id_key = '_'.join([ssn, n[1], n[2]])
             if id_key not in data.keys():
                 data[id_key] = {}
@@ -46,6 +44,7 @@ for category in data.keys():
         data_point = [product_id] + product_urls
         data_points.append(data_point)
     df = pd.DataFrame(data_points, columns=['id','url1','url2','url3'])
-    df.to_csv(f'{category}.csv')
+
+    df.to_csv(f'csv{os.sep}{category}.csv')
 
 
