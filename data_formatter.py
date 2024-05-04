@@ -29,6 +29,8 @@ def format_images_and_save(folder_path = 'res/images', save_path = 'res/images.c
 
 def load_images_from_csv(file_path = 'res/images.csv'):
     data, labels, index = [], [], []
+    if(not os.path.exists(file_path)):
+        return format_images_and_save(folder_path='res/images', save_path=file_path)
     with open(file_path, 'r') as file:
         for line in file:
             parts = line.split(';')

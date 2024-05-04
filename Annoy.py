@@ -1,20 +1,12 @@
 import annoy as an
 from joblib.numpy_pickle_utils import xrange
 import cv2
+from data_formatter import load_images_from_csv
 
 def prepare_flattened_image(image_path):
     image = cv2.imread(image_path)
     image = cv2.resize(image, (32,32))
     return image.flatten()
-def load_images_from_csv(file_path='res/images.csv'):
-    data, labels, index = [], [], []
-    with open(file_path, 'r') as file:
-        for line in file:
-            parts = line.split(';')
-            index.append(parts[0])
-            data.append([int(x) for x in parts[1].split(',')])
-            labels.append(parts[2])
-    return data, labels, index
 
 (data, labels, values) = load_images_from_csv()
 
