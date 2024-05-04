@@ -27,27 +27,26 @@ index_tree = an.AnnoyIndex(size_of_item, 'angular')
 for i in range(number_of_items):
     index_tree.add_item(i, data[i])
 
-index_tree.build(number_of_sets) # 50 trees
+index_tree.build(number_of_sets)
 index_tree.save('test.tree')
 
-# …
-
 u = an.AnnoyIndex(size_of_item, 'angular')
-u.load('test.tree') # super fast, will just mmap the file
+u.load('test.tree')
 
-queryImagePath = 'res/images/11/image0.jpg'
+queryImagePath = 'res/images/23/image0.jpg'
 
 image = prepare_flattened_image(queryImagePath)
-result = u.get_nns_by_vector(image, 10);
+(result, distances) = u.get_nns_by_vector(image, 5, include_distances=True);
 
 print(result)
+print(distances)
 for(i, r) in enumerate(result):
     print(values[r])
+
 cv2.imshow('Query Image', cv2.resize(cv2.imread(queryImagePath), (500,500) ))
+
 for(i, r) in enumerate(result):
     cv2.imshow('Result Image '+str(i), cv2.resize(cv2.imread(f'res/images/{values[result[i]]}'), (500,500)))
-# Wait indefinitely until a key is pressed
-cv2.waitKey(0)
 
-    # Close all OpenCV windows
+cv2.waitKey(0)
 cv2.destroyAllWindows()
