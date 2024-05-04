@@ -15,7 +15,7 @@ for i, data_point in enumerate(vals):
 
 t.build(len(set(df['labels']))) # 50 trees
 t.save('test.tree')
-
+cv2.boundingRect()
 # …
 
 u = an.AnnoyIndex(f)
@@ -41,5 +41,4 @@ for(i, r) in enumerate(result):
 # Wait indefinitely until a key is pressed
 cv2.waitKey(0)
 
-    # Close all OpenCV windows
 cv2.destroyAllWindows()
