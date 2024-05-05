@@ -50,7 +50,10 @@ def get_index(index_values, size_of_item):
 
 
 def get_values(index_values):
-    with open(f'res{os.sep}images{os.sep}{"-".join(index_values)}.csv', 'r') as file:
+    print(os.getcwd())
+    path = f'res{os.sep}images{os.sep}{"-".join(index_values)}.csv'
+    print(path)
+    with open(path, 'r') as file:
         values = []
         reader = csv.reader(file)
         for row in reader:

@@ -46,25 +46,28 @@ def similar_images_from_url(url):
 
         index_values = get_attributes_from_url(url)
 
-        (result, distances, values) = get_images_by_index( image, index_values=(index_values[0], index_values[1], index_values[2]), n_neighbours=5)
+        (result, distances, values) = get_images_by_index( image, index_values=(index_values[0], index_values[1], index_values[2]), n_neighbours=11)
 
         urls = []
 
 
         with open('res/inditextech_hackupc_challenge_images.csv') as file:
             csv_reader = csv.reader(file)
-            data_list = list(csv_reader)
-            for i in result:
-                first = values[i].split('\\')[2]
-                second = (values[i].split('\\')[-1]).removeprefix('image').removesuffix('.jpg')
-                urls.append(data_list[int(first)][int(second)])
+            data_list = list(csv_reader)[1:]
+            for x in result:
+                first = values[x].split('\\')[2]
+                second = (values[x].split('\\')[-1]).removeprefix('image').removesuffix('.jpg')
+                urls.append(data_list[int(first)][int(second)-1])
 
-        print(urls)
-        print_and_show(result, distances, values)
+        # print_and_show(result, distances, values)
+        return(urls)
 
-url = 'https://static.zara.net/photos///2024/V/0/1/p/4424/156/800/2/w/2048/4424156800_1_1_1.jpg?ts=1713531158636'
-url2 = 'https://static.zara.net/photos///2024/V/0/2/p/3920/423/507/2/w/2048/3920423507_6_1_1.jpg?ts=1707469389327'
-url3 = 'https://static.zara.net/photos///2024/V/0/1/p/4424/156/800/2/w/2048/4424156800_1_1_1.jpg?ts=1713531158636'
-url4 = 'https://static.zara.net/photos///2024/V/4/1/p/1649/052/999/2/w/2048/1649052999_6_1_1.jpg?ts=1701276936976'
+# url = 'https://static.zara.net/photos///2024/V/0/1/p/4424/156/800/2/w/2048/4424156800_1_1_1.jpg?ts=1713531158636'
+# url2 = 'https://static.zara.net/photos///2024/V/0/2/p/3920/423/507/2/w/2048/3920423507_6_1_1.jpg?ts=1707469389327'
+# url3 = 'https://static.zara.net/photos///2024/V/0/1/p/4424/156/800/2/w/2048/4424156800_1_1_1.jpg?ts=1713531158636'
+# url4 = 'https://static.zara.net/photos///2024/V/4/1/p/1649/052/999/2/w/2048/1649052999_6_1_1.jpg?ts=1701276936976'
+#
+# similar_images_from_url(url2)
 
-similar_images_from_url(url4)
+# url = 'https://static.zara.net/photos///2024/V/0/3/p/5767/521/712/2/w/2048/5767521712_3_1_1.jpg?ts=1707751046435'
+# similar_images_from_url(url)

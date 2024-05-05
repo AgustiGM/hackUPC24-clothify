@@ -30,16 +30,17 @@ def extract_important_object(image, kernel=(25, 25), initial_resize=(500, 750), 
     for contour in contours:
         if len(contour) > len(largest):
             largest = contour
-    x, y, w, h = cv2.boundingRect(largest)
-    if show_images:
-        cv2.imshow('sobel', grad)
-        cv2.drawContours(res_image, contours, -1, (0, 0, 255), 3)
-        cv2.rectangle(res_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.imshow('contour', res_image)
-    if len(sorted_c) > 1 and len(sorted_c[0])*0.8 < len(sorted_c[1]):
-        return res_image
-    return res_image[y:y+h, x:x+w]
-
+    if len(largest) != 0:
+        x, y, w, h = cv2.boundingRect(largest)
+        if show_images:
+            cv2.imshow('sobel', grad)
+            cv2.drawContours(res_image, contours, -1, (0, 0, 255), 3)
+            cv2.rectangle(res_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.imshow('contour', res_image)
+        if len(sorted_c) > 1 and len(sorted_c[0])*0.8 < len(sorted_c[1]):
+            return res_image
+        return res_image[y:y+h, x:x+w]
+    return res_image
 
 # path = f'images{os.sep}89{os.sep}image1.jpg'
 #

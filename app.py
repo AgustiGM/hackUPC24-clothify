@@ -1,6 +1,9 @@
+import traceback
+
 from flask import Flask, jsonify, request
 #from Annoy import get_similar_images
 from flask_cors import CORS
+from annoy_indexes_test import similar_images_from_url
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes and methods
@@ -46,19 +49,27 @@ def images():
             "https://static.zara.net/photos///2023/I/0/2/p/4767/488/723/2/w/2048/4767488723_3_1_1.jpg?ts=1685607087434",
             "https://static.zara.net/photos///2023/I/0/3/p/6887/602/250/2/w/2048/6887602250_3_1_1.jpg?ts=1689860680377"
         ]
+
+
+
         return jsonify({'image_urls': image_urls}), 200
 
     elif request.method == 'POST':
         try:
             # Obtener la URL de la imagen de la solicitud POST
             image_url = request.json.get('imageUrl')
-
+            print(request.json)
             # Imprimir la URL de la imagen en el servidor Flask
             print("Received image URL:", image_url)
 
             # Llamada algoritmo para obtener data set imagenes similares
+            try:
+                urls = similar_images_from_url(image_url)
+            except Exception as e:
+                traceback.print_exc()
+                return jsonify({'error': str(e)}), 404
+            return jsonify(urls[1:]), 200
 
-            return "Image URL received successfully", 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
