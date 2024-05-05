@@ -4,11 +4,11 @@ import os
 import csv
 from utils import create_directory
 
-root_directory = 'images'
-with open('inditextech_hackupc_challenge_images.csv') as file:
+root_directory = 'res/images'
+with open('res/inditextech_hackupc_challenge_images.csv') as file:
     data = csv.reader(file)
     for idx, element in enumerate(data):
-        if 0 < idx < 251:
+        if 0 < idx < 3:
             directory = f'{root_directory}{os.sep}{str(idx)}'
             create_directory(directory)
             for i, url in enumerate(element):

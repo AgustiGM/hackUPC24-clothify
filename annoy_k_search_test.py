@@ -19,11 +19,11 @@ def my_print(result, distances, values):
         print(values[r])
 
 
-queryImagePath = 'res/images/59/image1.jpg'
+queryImagePath = 'res/images/89/image0.jpg'
 image = cv2.imread(queryImagePath)
 
-# (result, distances, values) = Annoy.get_images(csvdata='res/images.csv', k_search=5, image = image)
-# print_and_show(result, distances, values)
+(result, distances, values) = Annoy.get_images(csvdata='res/images.csv', image = image)
+print_and_show(result, distances, values)
 
 # distances_means = []
 # for i in range(10):

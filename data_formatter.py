@@ -4,6 +4,11 @@ import glob
 from object_detector import extract_important_object
 
 
+def format_image(image, size=(32, 32)):
+    image = extract_important_object(image)
+    image = cv2.resize(image, size)
+    return image.flatten()
+
 def format_images(folder_path='res/images', size = (32,32)):
     data, labels, index = [], [], []
 

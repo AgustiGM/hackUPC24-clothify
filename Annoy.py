@@ -1,3 +1,6 @@
+import csv
+import os
+
 import annoy as an
 from joblib.numpy_pickle_utils import xrange
 import cv2
@@ -40,25 +43,27 @@ def get_images(csvdata, image, n_neighbours = 5):
     return result, distances, values
 
 
-def get_index(index_values):
-    index = an.AnnoyIndex(3000, 'angular')
-    index.load('index-'+index_values.index(0)+'-'+index_values.index(1)+'-'+index_values.index(2)+'.tree')
+def get_index(index_values, size_of_item):
+    index = an.AnnoyIndex(size_of_item, 'angular')
+    index.load(f'res{os.sep}images{os.sep}{"-".join(index_values)}.tree')
     return index
 
 
 def get_values(index_values):
-    with open('index-'+index_values.index(0)+'-'+index_values.index(1)+'-'+index_values.index(2)+'.csv', 'r') as file:
+    with open(f'res{os.sep}images{os.sep}{"-".join(index_values)}.csv', 'r') as file:
         values = []
-        for line in file:
-            values.append(line)
+        reader = csv.reader(file)
+        for row in reader:
+            values = row
     return values
 
 
 def get_images_by_index(image, index_values = (0,0,0), n_neighbours = 5):
-    index_tree = get_index(index_values)
     values = get_values(index_values)
 
     image = prepare_flattened_image(image)
+    index_tree = get_index(index_values, len(image))
+
     (result, distances) = index_tree.get_nns_by_vector(image, n_neighbours, search_k=5, include_distances=True)
 
     return result, distances, values
